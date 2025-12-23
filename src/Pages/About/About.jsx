@@ -3,19 +3,19 @@ export default function AboutHero() {
     {
       name: "Eylon Mizrahi",
       role: "Co-Founder, CEO",
-      image: "./public/About/founder1.avif",
+      image: "/About/founder1.avif",
       bio: "Seasoned tech entrepreneur and Y Combinator alumnus with expertise in scaling SaaS companies."
     },
     {
       name: "Ryan Lane",
       role: "Co-Founder",
-      image: "./public/About/founder2.avif",
+      image: "/About/founder2.avif",
       bio: "Expert in hospitality technology and operations, focused on seamless guest experiences."
     },
     {
       name: "Sam Smith",
       role: "Co-Founder",
-      image: "./public/About/founder1.avif",
+      image: "/About/founder1.avif",
       bio: "AI and machine learning specialist driving technical innovation at Flowtel."
     },
   ];
@@ -23,13 +23,13 @@ export default function AboutHero() {
   const investors = [
     {
       name: "Zeev Ventures",
-      logo: "./public/About/AB.jpg",
+      logo: "/About/AB.jpg",
       description:
         "Known for backing bold founders early, Zeev Ventures helped build breakout companies like Houzz, TripIt, and Next Insurance — guiding startups from vision to industry leadership.",
     },
     {
       name: "Y Combinator",
-      logo: "./public/About/combinator.png",
+      logo: "/About/combinator.png",
       description:
         "Y Combinator is the world's leading startup accelerator, behind global successes like Airbnb, Stripe, DoorDash, and Coinbase — giving founders credibility, capital, and a powerful network from day one.",
     },
@@ -43,7 +43,7 @@ export default function AboutHero() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('public/About/about.jpg')",
+            backgroundImage: "url('/About/about.jpg')",
           }}
         />
 

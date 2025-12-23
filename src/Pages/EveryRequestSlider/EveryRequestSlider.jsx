@@ -11,10 +11,10 @@ export default function EveryRequestSlider() {
 
   // Placeholder images
   const images = [
-    "././public/slide1.jpeg",
-    "./public/slide2.avif",
-    "./public/slide3.jpg",
-    "./public/slide4.webp",
+    "/slide1.jpeg",
+    "/slide2.avif",
+    "/slide3.jpg",
+    "/slide4.webp",
   ];
 
   return (

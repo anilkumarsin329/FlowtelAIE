@@ -11,7 +11,7 @@ export default function Hero() {
         loop
         playsInline
       >
-        <source src="public\Hero\simple vedio.mp4" type="video/mp4" />
+        <source src="/Hero/simple vedio.mp4" type="video/mp4" />
         {/* Fallback gradient if video doesn't load */}
       </video>
       
