@@ -35,7 +35,7 @@ export default function Hero() {
           </p>
 
           <NavLink
-            to="/contact"
+            to="/getdemo"
             className="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             Get Started

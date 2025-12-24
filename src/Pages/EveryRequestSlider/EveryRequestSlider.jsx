@@ -9,7 +9,6 @@ export default function EveryRequestSlider() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Placeholder images
   const images = [
     "/slide1.jpeg",
     "/slide2.avif",
@@ -26,14 +25,13 @@ export default function EveryRequestSlider() {
           <h2 className="text-4xl md:text-5xl font-semibold leading-tight">
             Every request, fulfilled naturally
           </h2>
-         
         </div>
 
         {/* Slider 1 (Left → Right) */}
-        <div className="relative mb-0">
+        <div className="relative">
           <div className="flex animate-marquee">
             {[...images, ...images].map((img, i) => (
-              <SlideImage key={i} img={img} scrollY={scrollY} />
+              <SlideImage key={`row1-${i}`} img={img} scrollY={scrollY} />
             ))}
           </div>
         </div>
@@ -41,8 +39,8 @@ export default function EveryRequestSlider() {
         {/* Slider 2 (Right → Left) */}
         <div className="relative">
           <div className="flex animate-marquee-reverse">
-            {[...images.reverse(), ...images].map((img, i) => (
-              <SlideImage key={i} img={img} scrollY={scrollY} />
+            {[...[...images].reverse(), ...images].map((img, i) => (
+              <SlideImage key={`row2-${i}`} img={img} scrollY={scrollY} />
             ))}
           </div>
         </div>
@@ -63,7 +61,7 @@ function SlideImage({ img, scrollY }) {
         alt="Flowtel feature"
         className="w-full h-full object-cover"
       />
-      <div 
+      <div
         className="absolute inset-0 bg-black pointer-events-none"
         style={{ opacity: blackOverlay }}
       />

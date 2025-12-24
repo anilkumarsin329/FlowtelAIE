@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 export default function FinalCTA() {
   return (
     <section className="relative bg-[#0B0F14] text-white py-32 overflow-hidden border-b-[3px] border-white/20">
@@ -20,7 +22,8 @@ export default function FinalCTA() {
           Make your hotel flow
         </h2>
 
-        <button
+        
+        <NavLink  to="/getdemo"
           className="inline-flex items-center px-6 py-2.5
                      rounded-full border border-white/30
                      text-sm font-medium
@@ -28,7 +31,7 @@ export default function FinalCTA() {
                      transition"
         >
           Sign Up
-        </button>
+        </NavLink>
       </div>
     </section>
   );
