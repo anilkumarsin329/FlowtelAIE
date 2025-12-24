@@ -1,113 +1,67 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { FiCalendar, FiPhoneCall, FiX } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hi! I'm Flowtel AI Assistant. How can I help you today?", sender: 'bot' }
-  ]);
-  const [inputValue, setInputValue] = useState('');
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-
-    const newMessage = {
-      id: messages.length + 1,
-      text: inputValue,
-      sender: 'user'
-    };
-
-    setMessages([...messages, newMessage]);
-    setInputValue('');
-
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponse = {
-        id: messages.length + 2,
-        text: "Thanks for your message! Our team will get back to you soon. For immediate assistance, please book a demo.",
-        sender: 'bot'
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-  };
+  const [open, setOpen] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   return (
     <>
-      {/* Chat Button */}
+      {/* TOGGLE BUTTON */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-8 left-8 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-full shadow-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-110"
-        aria-label="Open chat"
+        onClick={() => setOpen(!open)}
+        className="fixed bottom-6 left-6 z-50 flex items-center gap-2
+        bg-white text-black px-6 py-3 rounded-full shadow-lg border"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-          />
-        </svg>
+        {open ? <FiX size={20} /> : <FiCalendar size={18} />}
+        {open ? "Close" : "Let’s chat"}
       </button>
 
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-24 left-8 z-50 w-80 h-96 bg-white rounded-lg shadow-2xl border border-gray-200">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
-            <h3 className="font-semibold">Flowtel Assistant</h3>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200"
-            >
-              ×
-            </button>
-          </div>
+      {/* CHAT POPUP */}
+      {open && !showCalendar && (
+        <div className="fixed bottom-20 left-6 z-50 w-72 bg-white rounded-xl shadow-2xl border p-4 space-y-3">
+          <a
+            href="tel:+917079578207"
+            className="flex justify-center gap-2 bg-gray-100 py-2 rounded-lg"
+          >
+            <FiPhoneCall /> Call Us
+          </a>
 
-          {/* Messages */}
-          <div className="h-64 overflow-y-auto p-4 space-y-3">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-xs p-3 rounded-lg text-sm ${
-                    message.sender === 'user'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {message.text}
-                </div>
-              </div>
-            ))}
-          </div>
+          <a
+            href="https://wa.me/917079578207"
+            target="_blank"
+            className="flex justify-center gap-2 bg-green-500 text-white py-2 rounded-lg"
+          >
+            <FaWhatsapp /> WhatsApp
+          </a>
 
-          {/* Input */}
-          <form onSubmit={handleSendMessage} className="p-4 border-t">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Type your message..."
-                className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <button
-                type="submit"
-                className="bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </button>
-            </div>
-          </form>
+          <button
+            onClick={() => setShowCalendar(true)}
+            className="w-full flex justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg"
+          >
+            <FiCalendar /> Schedule Meeting
+          </button>
+        </div>
+      )}
+
+      {/* FULL CALENDLY PAGE (CODYCO STYLE) */}
+      {showCalendar && (
+        <div className="fixed inset-0 z-50 bg-white">
+          {/* CLOSE BUTTON */}
+          <button
+            onClick={() => setShowCalendar(false)}
+            className="absolute top-4 right-4 text-black"
+          >
+            <FiX size={28} />
+          </button>
+
+          {/* CALENDLY INLINE */}
+          <div
+            className="calendly-inline-widget"
+            data-url="https://calendly.com/your-anilkumarsingh/meeting"
+            style={{ minWidth: "100%", height: "100vh" }}
+          ></div>
         </div>
       )}
     </>

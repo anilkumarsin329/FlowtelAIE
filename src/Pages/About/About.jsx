@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 export default function AboutHero() {
   const founders = [
     {
@@ -224,7 +226,7 @@ export default function AboutHero() {
             Make your hotel flow
           </h2>
 
-          <button
+          <NavLink  to="/getdemo"
             className="inline-flex items-center px-6 py-2.5
                        rounded-full border border-white/30
                        text-sm font-medium
@@ -232,7 +234,7 @@ export default function AboutHero() {
                        transition"
           >
             Sign Up
-          </button>
+          </NavLink>
         </div>
       </section>
     </>

@@ -1,9 +1,68 @@
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function GetDemo() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    hotel: "",
+    rooms: "",
+    phone: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { name, email, hotel, rooms, phone } = formData;
+
+    // 🔴 Validation
+    if (!name || !email || !hotel || !rooms || !phone) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (phone.length < 10) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
+    // 💾 Save to LocalStorage
+    const existingData =
+      JSON.parse(localStorage.getItem("getDemoRequests")) || [];
+
+    localStorage.setItem(
+      "getDemoRequests",
+      JSON.stringify([...existingData, formData])
+    );
+
+    toast.success("Demo request submitted successfully 🚀");
+
+    // Reset form
+    setFormData({
+      name: "",
+      email: "",
+      hotel: "",
+      rooms: "",
+      phone: "",
+    });
+  };
+
   return (
     <section className="min-h-screen bg-[#0B0F14] text-white">
-      <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
+      <ToastContainer position="top-right" theme="dark" />
 
-        <form className="max-w-3xl">
+      <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        <form onSubmit={handleSubmit} className="max-w-3xl">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
             <div>
@@ -12,6 +71,9 @@ export default function GetDemo() {
               </label>
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 placeholder="Enter your full name"
                 className="w-full h-12 bg-transparent border border-white/20 rounded-md px-4 text-sm placeholder:text-gray-500 focus:outline-none focus:border-white/40"
               />
@@ -23,6 +85,9 @@ export default function GetDemo() {
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Enter your email"
                 className="w-full h-12 bg-transparent border border-white/20 rounded-md px-4 text-sm placeholder:text-gray-500 focus:outline-none focus:border-white/40"
               />
@@ -35,6 +100,9 @@ export default function GetDemo() {
             </label>
             <input
               type="text"
+              name="hotel"
+              value={formData.hotel}
+              onChange={handleChange}
               placeholder="Enter your hotel name"
               className="w-full h-12 bg-transparent border border-white/20 rounded-md px-4 text-sm placeholder:text-gray-500 focus:outline-none focus:border-white/40"
             />
@@ -47,6 +115,9 @@ export default function GetDemo() {
               </label>
               <input
                 type="number"
+                name="rooms"
+                value={formData.rooms}
+                onChange={handleChange}
                 placeholder="Enter number of rooms"
                 className="w-full h-12 bg-transparent border border-white/20 rounded-md px-4 text-sm placeholder:text-gray-500 focus:outline-none focus:border-white/40"
               />
@@ -58,6 +129,9 @@ export default function GetDemo() {
               </label>
               <input
                 type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 placeholder="Enter your phone number"
                 className="w-full h-12 bg-transparent border border-white/20 rounded-md px-4 text-sm placeholder:text-gray-500 focus:outline-none focus:border-white/40"
               />
