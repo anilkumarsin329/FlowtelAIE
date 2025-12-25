@@ -15,7 +15,7 @@ export default function GetDemo() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { name, email, hotel, rooms, phone } = formData;
@@ -36,25 +36,33 @@ export default function GetDemo() {
       return;
     }
 
-    // 💾 Save to LocalStorage
-    const existingData =
-      JSON.parse(localStorage.getItem("getDemoRequests")) || [];
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/demo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    localStorage.setItem(
-      "getDemoRequests",
-      JSON.stringify([...existingData, formData])
-    );
+      const result = await response.json();
 
-    toast.success("Demo request submitted successfully 🚀");
-
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      hotel: "",
-      rooms: "",
-      phone: "",
-    });
+      if (response.ok) {
+        toast.success("Demo request submitted successfully 🚀");
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          hotel: "",
+          rooms: "",
+          phone: "",
+        });
+      } else {
+        toast.error(result.error || "Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Failed to submit request. Please try again.");
+    }
   };
 
   return (

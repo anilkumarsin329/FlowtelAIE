@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 import { 
   FaFacebook, 
   FaTwitter, 
@@ -10,6 +12,47 @@ import {
 } from 'react-icons/fa';
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/newsletter`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success("Successfully subscribed to newsletter! 🎉");
+        setEmail(""); // Clear input
+      } else {
+        toast.error(result.error || "Subscription failed");
+      }
+    } catch (error) {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <footer className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 mt-auto min-h-[50vh] h-auto flex flex-col">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 flex flex-col">
@@ -78,16 +121,23 @@ export default function Footer() {
             </div>
 
             {/* Newsletter */}
-            <div className="flex flex-col sm:flex-row gap-2">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="w-full px-3 py-2 text-sm rounded bg-slate-800 text-white border border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                disabled={isLoading}
+                className="w-full px-3 py-2 text-sm rounded bg-slate-800 text-white border border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-500 disabled:opacity-50"
               />
-              <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded text-sm font-medium">
-                Subscribe
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Subscribing..." : "Subscribe"}
               </button>
-            </div>
+            </form>
           </div>
         </div>
 
