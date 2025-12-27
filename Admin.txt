@@ -1,0 +1,123 @@
+# FlowtelAI Admin Panel - API Documentation
+
+## Total APIs: 15
+
+### Meeting APIs (9)
+1. GET /api/meetings/today - Today's meetings
+   Response: { data: [meetings] }
+
+2. GET /api/meetings/date/:date - Meetings by date  
+   Response: { data: [meetings] }
+
+3. GET /api/meetings/slots/:date - Available slots
+   Response: { success: true, data: [slots] }
+
+4. GET /api/meetings/requests - All meeting requests
+   Response: { data: [requests] }
+
+5. POST /api/meetings/book - Book meeting request
+   Body: { name, email, phone, date, time, message }
+   Response: { success: true, message, data: {meeting, meetingRequest} }
+
+6. POST /api/meetings/slots - Create meeting slots
+   Body: { date, slots: ["09:00", "09:15"] }
+   Response: { success: true, message, data: [slots] }
+
+7. POST /api/meetings/send-update-email - Send update email
+   Body: { email, name, oldDate, oldTime, newDate, newTime }
+   Response: { success: true, message }
+
+8. PUT /api/meetings/requests/:id - Update meeting request
+   Body: { name, email, phone, date, time, message }
+   Response: { success: true, message, data: request }
+
+9. DELETE /api/meetings/requests/:id - Delete meeting request
+   Response: { success: true, message }
+
+### Demo APIs (3)
+10. GET /api/demo - All demo requests
+    Response: { data: [demos] }
+
+11. PUT /api/demo/:id - Update demo request
+    Body: { name, email, phone, company, message }
+    Response: { success: true, message }
+
+12. DELETE /api/demo/:id - Delete demo request
+    Response: { success: true, message }
+
+### Newsletter APIs (2)
+13. GET /api/newsletter - All subscribers
+    Response: { data: [subscribers] }
+
+14. DELETE /api/newsletter/:id - Delete subscriber
+    Response: { success: true, message }
+
+### Meeting Slot Management API (1)
+15. DELETE /api/meetings/slots/:id - Delete meeting slot
+    Response: { success: true, message }
+
+## Authentication
+- Basic Auth: admin:flowtel123
+- All admin APIs require authentication
+- Header: Authorization: Basic YWRtaW46Zmxvd3RlbDEyMw==
+
+## Common JSON Structures
+
+### Meeting Request
+```json
+{
+  "_id": "string",
+  "name": "string",
+  "email": "string",
+  "phone": "string",
+  "date": "YYYY-MM-DD",
+  "time": "HH:MM",
+  "message": "string",
+  "status": "pending|confirmed|cancelled",
+  "createdAt": "ISO date"
+}
+```
+
+### Demo Request
+```json
+{
+  "_id": "string",
+  "name": "string",
+  "email": "string",
+  "phone": "string",
+  "company": "string",
+  "message": "string",
+  "createdAt": "ISO date"
+}
+```
+
+### Newsletter Subscriber
+```json
+{
+  "_id": "string",
+  "email": "string",
+  "createdAt": "ISO date"
+}
+```
+
+### Meeting Slot
+```json
+{
+  "_id": "string",
+  "date": "ISO date",
+  "time": "HH:MM",
+  "status": "available|booked",
+  "clientName": "string",
+  "clientEmail": "string",
+  "clientPhone": "string",
+  "notes": "string"
+}
+```
+
+## Features Implemented
+- Meeting scheduling & management
+- Demo request handling
+- Newsletter subscriber management
+- Email notifications
+- Real-time notifications
+- CRUD operations for all entities
