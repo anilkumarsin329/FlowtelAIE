@@ -26,7 +26,7 @@ export default function Preloader() {
         />
       </div>
       
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes slowSpin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }

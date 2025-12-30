@@ -20,36 +20,57 @@ export default function GetDemo() {
 
     const { name, email, hotel, rooms, phone } = formData;
 
-    // 🔴 Validation
+  
     if (!name || !email || !hotel || !rooms || !phone) {
       toast.error("Please fill all required fields");
       return;
     }
 
+    
+    if (!/^[A-Za-z ]{3,}$/.test(name)) {
+      toast.error("Please enter a valid full name");
+      return;
+    }
+
+   
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       toast.error("Please enter a valid email address");
       return;
     }
 
-    if (phone.length < 10) {
-      toast.error("Please enter a valid phone number");
+   
+    if (hotel.length < 2) {
+      toast.error("Please enter a valid hotel name");
+      return;
+    }
+
+    if (!/^[1-9][0-9]*$/.test(rooms)) {
+      toast.error("Please enter a valid number of rooms");
+      return;
+    }
+
+   
+    if (!/^[0-9]{10}$/.test(phone)) {
+      toast.error("Please enter a valid 10-digit phone number");
       return;
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/demo`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/demo`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const result = await response.json();
 
       if (response.ok) {
         toast.success("Demo request submitted successfully 🚀");
-        // Reset form
         setFormData({
           name: "",
           email: "",
@@ -71,7 +92,6 @@ export default function GetDemo() {
 
       <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
         <form onSubmit={handleSubmit} className="max-w-3xl">
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
             <div>
               <label className="block text-sm text-gray-300 mb-3">
@@ -152,7 +172,6 @@ export default function GetDemo() {
           >
             Submit Request
           </button>
-
         </form>
       </div>
     </section>

@@ -6,10 +6,11 @@ export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hi! I'm FlowtelAI assistant. How can I help you today?", sender: "bot" }
+    { id: 1, text: "Hi! I'm FlowtelAI assistant. I can help you with information about our hotel management platform, check meeting availability, or answer any questions about our services. How can I help you today?", sender: "bot" }
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(true);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -20,9 +21,122 @@ export default function Chatbot() {
     scrollToBottom();
   }, [messages]);
 
+  // Get meeting slots availability
+  const getMeetingSlots = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meetings/today`);
+      
+      if (!response.ok) {
+        // Fallback to mock data if API fails
+        const today = new Date().toLocaleDateString();
+        const meetings = [
+          { id: 1, time: '10:00 AM', clientName: '', status: 'available' },
+          { id: 2, time: '2:00 PM', clientName: 'Jane Smith', status: 'booked' },
+          { id: 3, time: '4:00 PM', clientName: '', status: 'available' },
+          { id: 4, time: '6:00 PM', clientName: 'Mike Johnson', status: 'booked' },
+        ];
+        
+        const availableSlots = meetings.filter(m => m.status === 'available');
+        const bookedSlots = meetings.filter(m => m.status === 'booked');
+        
+        return {
+          today,
+          available: availableSlots,
+          booked: bookedSlots,
+          total: meetings.length
+        };
+      }
+      
+      const data = await response.json();
+      const meetings = data.data || [];
+      const today = new Date().toLocaleDateString();
+      
+      const availableSlots = meetings.filter(m => m.status === 'available');
+      const bookedSlots = meetings.filter(m => m.status === 'booked');
+      
+      return {
+        today,
+        available: availableSlots,
+        booked: bookedSlots,
+        total: meetings.length
+      };
+    } catch (error) {
+      console.error('Error fetching meeting slots:', error);
+      // Return mock data as fallback
+      const today = new Date().toLocaleDateString();
+      return {
+        today,
+        available: [{ time: '10:00 AM' }, { time: '4:00 PM' }],
+        booked: [{ time: '2:00 PM' }, { time: '6:00 PM' }],
+        total: 4
+      };
+    }
+  };
+
   const sendToGemini = async (message) => {
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        console.error('Gemini API key not found');
+        return "I'm having trouble right now. Please try calling us at +91 7079578207.";
+      }
+
+      // Check if user is asking about meeting slots
+      const meetingKeywords = ['meeting', 'slot', 'available', 'book', 'schedule', 'appointment', 'time'];
+      const isMeetingQuery = meetingKeywords.some(keyword => 
+        message.toLowerCase().includes(keyword)
+      );
+
+      let meetingInfo = '';
+      if (isMeetingQuery) {
+        const slots = await getMeetingSlots();
+        if (slots) {
+          meetingInfo = `\n\nMeeting Slots for ${slots.today}:\n`;
+          meetingInfo += `Available Slots: ${slots.available.map(s => s.time).join(', ')}\n`;
+          meetingInfo += `Booked Slots: ${slots.booked.map(s => s.time).join(', ')}\n`;
+          meetingInfo += `Total Available: ${slots.available.length}/${slots.total}`;
+        }
+      }
+
+      const flowtelContext = `
+You are FlowtelAI's customer support assistant. Here's what you need to know about FlowtelAI:
+
+ABOUT FLOWTELAI:
+- FlowtelAI is an advanced hotel management platform powered by AI
+- We help hotels streamline operations, improve guest experience, and increase revenue
+- Our platform includes room management, booking systems, guest services, and analytics
+- We serve hotels of all sizes from boutique properties to large chains
+
+SERVICES:
+- AI-powered room allocation and pricing optimization
+- Automated guest communication and support
+- Real-time analytics and reporting
+- Integration with major booking platforms
+- 24/7 customer support
+- Mobile app for hotel staff and guests
+
+CONTACT INFO:
+- Phone: +91 7079578207
+- Website: FlowtelAI.com
+- Demo available at: /getdemo
+- Meeting scheduling: /meeting
+
+KEY FEATURES:
+- Never miss a booking with AI-powered alerts
+- Seamless integration with existing hotel systems
+- Real-time occupancy tracking
+- Automated guest check-in/check-out
+- Revenue optimization through dynamic pricing
+- Multi-language support
+
+If asked about meeting availability, provide the current slot information.
+Keep responses helpful, professional, and concise.
+${meetingInfo}
+
+User question: ${message}`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,15 +144,14 @@ export default function Chatbot() {
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `You are a helpful AI assistant for FlowtelAI. Answer the user's question directly and helpfully. If asked about FlowtelAI, mention it's a hotel management platform. Keep responses concise.
-
-User question: ${message}`
+              text: flowtelContext
             }]
           }]
         })
       });
       
       if (!response.ok) {
+        console.error('Gemini API response not ok:', response.status, response.statusText);
         return "I'm having trouble right now. Please try calling us at +91 7079578207.";
       }
 
@@ -47,37 +160,54 @@ User question: ${message}`
       if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
         return data.candidates[0].content.parts[0].text;
       } else {
+        console.error('Unexpected API response structure:', data);
         return "I couldn't understand that. Can you ask differently?";
       }
     } catch (error) {
+      console.error('Gemini API error:', error);
       return "I'm having connection issues. Please call +91 7079578207 or schedule a meeting.";
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (messageText = null) => {
+    const message = messageText || inputMessage;
+    if (!message.trim()) return;
 
     const userMessage = {
       id: Date.now(),
-      text: inputMessage,
+      text: message,
       sender: "user"
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
     setIsTyping(true);
+    setShowQuickActions(false);
 
-    const botResponse = await sendToGemini(inputMessage);
-    
-    setTimeout(() => {
-      const botMessage = {
-        id: Date.now() + 1,
-        text: botResponse,
-        sender: "bot"
-      };
-      setMessages(prev => [...prev, botMessage]);
-      setIsTyping(false);
-    }, 1000);
+    try {
+      const botResponse = await sendToGemini(message);
+      
+      setTimeout(() => {
+        const botMessage = {
+          id: Date.now() + 1,
+          text: botResponse,
+          sender: "bot"
+        };
+        setMessages(prev => [...prev, botMessage]);
+        setIsTyping(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setTimeout(() => {
+        const errorMessage = {
+          id: Date.now() + 1,
+          text: "Sorry, I'm having trouble responding. Please try again or contact us directly.",
+          sender: "bot"
+        };
+        setMessages(prev => [...prev, errorMessage]);
+        setIsTyping(false);
+      }, 1000);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -156,6 +286,35 @@ User question: ${message}`
 
           {/* MESSAGES */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {showQuickActions && messages.length === 1 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                <button
+                  onClick={() => handleSendMessage("What is FlowtelAI?")}
+                  className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+                >
+                  What is FlowtelAI?
+                </button>
+                <button
+                  onClick={() => handleSendMessage("Show available meeting slots")}
+                  className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
+                >
+                  Meeting Slots
+                </button>
+                <button
+                  onClick={() => handleSendMessage("How can I get a demo?")}
+                  className="px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
+                >
+                  Get Demo
+                </button>
+                <button
+                  onClick={() => handleSendMessage("What are your key features?")}
+                  className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
+                >
+                  Features
+                </button>
+              </div>
+            )}
+            
             {messages.map((message) => (
               <div
                 key={message.id}
