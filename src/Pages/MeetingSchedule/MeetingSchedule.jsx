@@ -79,7 +79,7 @@ export default function MeetingSchedule() {
   const fetchAvailableSlots = async (date) => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meetings/slots/${date}`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002'}/api/meetings/slots/${date}`);
       const result = await response.json();
       
       if (result.success) {
@@ -127,7 +127,7 @@ export default function MeetingSchedule() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/meetings/book`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002'}/api/meetings/book`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

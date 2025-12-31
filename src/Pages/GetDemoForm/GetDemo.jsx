@@ -20,44 +20,61 @@ export default function GetDemo() {
 
     const { name, email, hotel, rooms, phone } = formData;
 
-  
     if (!name || !email || !hotel || !rooms || !phone) {
-      toast.error("Please fill all required fields");
+      toast.error("Please fill all required fields", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
 
-    
     if (!/^[A-Za-z ]{3,}$/.test(name)) {
-      toast.error("Please enter a valid full name");
+      toast.error("Please enter a valid full name", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
-   
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      toast.error("Please enter a valid email address");
+      toast.error("Please enter a valid email address", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
-   
     if (hotel.length < 2) {
-      toast.error("Please enter a valid hotel name");
+      toast.error("Please enter a valid hotel name", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
     if (!/^[1-9][0-9]*$/.test(rooms)) {
-      toast.error("Please enter a valid number of rooms");
+      toast.error("Please enter a valid number of rooms", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
-   
     if (!/^[0-9]{10}$/.test(phone)) {
-      toast.error("Please enter a valid 10-digit phone number");
+      toast.error("Please enter a valid 10-digit phone number", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/demo`,
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002'}/api/demo`,
         {
           method: "POST",
           headers: {
@@ -70,7 +87,14 @@ export default function GetDemo() {
       const result = await response.json();
 
       if (response.ok) {
-        toast.success("Demo request submitted successfully 🚀");
+        toast.success("Demo request submitted successfully 🚀", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         setFormData({
           name: "",
           email: "",
@@ -79,16 +103,35 @@ export default function GetDemo() {
           phone: "",
         });
       } else {
-        toast.error(result.error || "Something went wrong");
+        toast.error(result.error || "Something went wrong", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
     } catch (error) {
-      toast.error("Failed to submit request. Please try again.");
+      toast.error("Failed to submit request. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
   return (
     <section className="min-h-screen bg-[#0B0F14] text-white">
-      <ToastContainer position="top-right" theme="dark" />
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        toastClassName="!bg-gray-800 !text-white"
+        progressClassName="!bg-blue-500"
+      />
 
       <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
         <form onSubmit={handleSubmit} className="max-w-3xl">

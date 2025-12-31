@@ -77,9 +77,9 @@ export default function Chatbot() {
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       
-      if (!apiKey) {
+      if (!apiKey || apiKey === 'YOUR_NEW_API_KEY_HERE') {
         console.error('Gemini API key not found');
-        return "I'm having trouble right now. Please try calling us at +91 7079578207.";
+        return "I'm FlowtelAI assistant! I can help you with:\n\n• Hotel management platform information\n• Meeting scheduling\n• Demo requests\n• Contact details\n\nFor immediate assistance, call +91 7079578207 or schedule a meeting at /meeting";
       }
 
       // Check if user is asking about meeting slots
